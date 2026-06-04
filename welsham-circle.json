@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "key": "welsham circle",
+  "name": "welsham circle",
+  "displayName": "WELSHAM CIRCLE",
+  "subtitle": "Welsham Central → welsham central — 22.9 km · 8 stations",
+  "biome": "urban",
+  "service": "2X42 START → END",
+  "totalKm": 22.92,
+  "stations": [
+    {
+      "km": 0,
+      "name": "Welsham Central",
+      "code": "WEC",
+      "plat": 300,
+      "side": "R",
+      "elev": 80,
+      "lat": 55.988298,
+      "lon": -0.291157,
+      "platforms": 3,
+      "type": "terminus",
+      "style": "victorian"
+    },
+    {
+      "km": 2.974,
+      "name": "welsham jn",
+      "code": "WEJ",
+      "plat": 200,
+      "side": "I",
+      "elev": 80,
+      "lat": 56.004041,
+      "lon": -0.327867,
+      "platforms": 3,
+      "type": "junction"
+    },
+    {
+      "km": 7.839,
+      "name": "silkie street",
+      "code": "SIK",
+      "plat": 300,
+      "side": "L",
+      "elev": 80,
+      "lat": 55.97625,
+      "lon": -0.385231,
+      "platforms": 5,
+      "style": "rural"
+    },
+    {
+      "km": 10.104,
+      "name": "bankside",
+      "code": "BNK",
+      "plat": 200,
+      "side": "L",
+      "elev": 80,
+      "lat": 55.955998,
+      "lon": -0.389573,
+      "platforms": 2
+    },
+    {
+      "km": 13.278,
+      "name": "welsham UFC",
+      "code": "WFC",
+      "plat": 200,
+      "side": "L",
+      "elev": 80,
+      "lat": 55.943996,
+      "lon": -0.345634,
+      "platforms": 2,
+      "type": "halt"
+    },
+    {
+      "km": 19.151,
+      "name": "welsham st peters",
+      "code": "WSP",
+      "plat": 300,
+      "side": "R",
+      "elev": 80,
+      "lat": 55.960346,
+      "lon": -0.260444,
+      "platforms": 4
+    },
+    {
+      "km": 20.783,
+      "name": "central market",
+      "code": "WCM",
+      "plat": 100,
+      "side": "L",
+      "elev": 80,
+      "lat": 55.974987,
+      "lon": -0.262649
+    },
+    {
+      "km": 22.916,
+      "name": "welsham central",
+      "code": "S08",
+      "plat": 300,
+      "side": "L",
+      "elev": 80,
+      "lat": 55.988536,
+      "lon": -0.285716,
+      "platforms": 3,
+      "type": "terminus",
+      "style": "victorian"
+    }
+  ],
+  "schedule": [
+    0,
+    208,
+    530,
+    696,
+    916,
+    1298,
+    1426,
+    1584
+  ],
+  "limits": [
+    {
+      "km": 0,
+      "mph": 60
+    },
+    {
+      "km": 0.35,
+      "mph": 60
+    },
+    {
+      "km": 1.59,
+      "mph": 75
+    },
+    {
+      "km": 16.26,
+      "mph": 50
+    },
+    {
+      "km": 17.42,
+      "mph": 75
+    },
+    {
+      "km": 23.45,
+      "mph": 15
+    }
+  ],
+  "features": [
+    {
+      "km": 5.03,
+      "type": "tunnel",
+      "len": 400
+    },
+    {
+      "km": 10.11,
+      "type": "bridge",
+      "len": 30
+    },
+    {
+      "km": 10.46,
+      "type": "bridge",
+      "len": 30
+    },
+    {
+      "km": 16.84,
+      "type": "viaduct",
+      "len": 80
+    },
+    {
+      "km": 19.17,
+      "type": "mill",
+      "side": "R"
+    },
+    {
+      "km": 20.1,
+      "type": "bridge",
+      "len": 30
+    }
+  ],
+  "riverPath": [
+    {
+      "km": 9.29,
+      "lat": 9411
+    },
+    {
+      "km": 9.48,
+      "lat": 5042
+    },
+    {
+      "km": 9.29,
+      "lat": 3420
+    },
+    {
+      "km": 9.75,
+      "lat": 2079
+    },
+    {
+      "km": 10.11,
+      "lat": 832
+    },
+    {
+      "km": 10.37,
+      "lat": -1283
+    },
+    {
+      "km": 7.34,
+      "lat": -2111
+    },
+    {
+      "km": 15.97,
+      "lat": -1027
+    },
+    {
+      "km": 15.68,
+      "lat": -2217
+    },
+    {
+      "km": 16.84,
+      "lat": -1804
+    },
+    {
+      "km": 17.13,
+      "lat": -1193
+    },
+    {
+      "km": 19.52,
+      "lat": -746
+    },
+    {
+      "km": 20.19,
+      "lat": 595
+    },
+    {
+      "km": 20.54,
+      "lat": 3417
+    },
+    {
+      "km": 20.47,
+      "lat": 5856
+    },
+    {
+      "km": 20.4,
+      "lat": 7752
+    }
+  ],
+  "shapePoints": []
+}
