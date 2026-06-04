@@ -121,7 +121,7 @@ canvas{display:block;position:fixed;inset:0;z-index:1;touch-action:none;}
     <h2>Select Unit</h2>
     <div id="unitSelect" style="display:flex;gap:0.6rem;justify-content:center;margin-bottom:1.1rem;flex-wrap:wrap;">
       <button class="unitBtn selected" data-train="t700" style="flex:1;min-width:140px;max-width:220px;width:auto;padding:0.7rem 0.4rem;font-size:0.78rem;line-height:1.4;">
-        CLASS 701/0<br><span style="font-size:0.62rem;color:rgba(180,210,235,0.55);letter-spacing:0.2em;">ALSTOM · 5-CAR · 100MPH</span>
+        CLASS 701/5<br><span style="font-size:0.62rem;color:rgba(180,210,235,0.55);letter-spacing:0.2em;">ALSTOM · 5-CAR · 100MPH</span>
       </button>
     </div>
     <label style="display:flex;align-items:center;justify-content:center;gap:0.6em;margin-bottom:0.7rem;font-size:0.78rem;letter-spacing:0.18em;color:rgba(180,210,235,0.75);cursor:pointer;text-transform:uppercase;">
@@ -450,17 +450,17 @@ let ROUTE = MAPS.welsham;
 const TRAINS = {
   t700: {
     key: 't700',
-    // Welsham Railway operates the unit as a Class 701/0 (Alstom Aventra,
+    // Welsham Railway operates the unit as a Class 701/5 (Alstom Aventra,
     // 5-car). The internal key, cab function and 3D model are all carried
     // over from the parent sim's Class 700/0 to preserve the bespoke cab
     // interior and exterior shell — only the user-facing branding, the
     // car count and the proportional mass / length change. tmsLabel and
     // speedoUnits drive the DMI / speedometer headers, name + builder
     // drive the menu button and HUD subtitle.
-    name: 'Class 701/0',
+    name: 'Class 701/5',
     builder: 'Alstom',
     cars: 5,                           // was 8 — Welsham Railway runs a 5-car formation
-    lengthM: 101.8,                    // real Class 701/0 5-car length
+    lengthM: 101.8,                    // real Class 701/5 5-car length
     massT: 262,                        // real 5-car mass, scaled from 8-car 388 t
     maxMph: 100,
     maxAccel: 1.00,                    // Aventra/Desiro-class — punchier than the Civity pair
@@ -471,8 +471,8 @@ const TRAINS = {
     davisA: 0.85,  davisB: 0.011,  davisC: 0.00016,
     cabBuilder: 'buildCab700',         // bespoke Desiro-City-style cab carried over from the parent sim
     eyeOffsetX: 0.0,                   // CENTRAL driving position, same as the underlying 700 model
-    tmsLabel: 'CLASS 701/0  DMI',
-    speedoUnits: 'CLASS 701/0',
+    tmsLabel: 'CLASS 701/5  DMI',
+    speedoUnits: 'CLASS 701/5',
     // Audio: traction profile carried over from the parent sim's Desiro
     // City tuning — IGBT-inverter whine sweeping ~350 Hz at standstill up
     // past ~1400 Hz at line speed. Close enough to an Aventra inverter
@@ -4756,7 +4756,7 @@ function buildCab700(spec){
     ctx.fillStyle = '#1c5aa8'; ctx.fillRect(0, 0, W, 50);
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 26px Orbitron, sans-serif';
     ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-    ctx.fillText(spec.tmsLabel || 'CLASS 701/0  DMI', 24, 25);
+    ctx.fillText(spec.tmsLabel || 'CLASS 701/5  DMI', 24, 25);
     ctx.textAlign = 'right';
     ctx.font = '20px Roboto Mono, monospace';
     ctx.fillText(`${routeHeadcode()}  ${routeEndcodes(' → ')}`, W - 24, 25);
@@ -4854,7 +4854,7 @@ function buildCab700(spec){
     tmsCtx.fillStyle = '#ffffff'; tmsCtx.font = 'bold 16px Orbitron'; tmsCtx.textAlign='left'; tmsCtx.textBaseline='middle';
     tmsCtx.fillText('TMS', 16, 16);
     tmsCtx.font = '18px Roboto Mono'; tmsCtx.fillStyle = '#5cbf78';
-    const rows = ['UNIT 701/0', '5-CAR  101.8 m', 'BRAKE TEST  OK', 'DOORS  CLOSED', 'PANTO  UP', 'TRACTION  READY'];
+    const rows = ['UNIT 701/5', '5-CAR  101.8 m', 'BRAKE TEST  OK', 'DOORS  CLOSED', 'PANTO  UP', 'TRACTION  READY'];
     for (let i = 0; i < rows.length; i++) tmsCtx.fillText(rows[i], 20, 60 + i * 30);
   })();
   const tmsPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.28), new THREE.MeshBasicMaterial({ map: tmsTex }));

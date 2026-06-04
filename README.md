@@ -1,7 +1,7 @@
 # Welsham Railway
 
 A browser-based train driver simulator running the **Welsham Circle** — an
-8-station circular urban route — driving the **Class 701/0**, a 5-car
+8-station circular urban route — driving the **Class 701/5**, a 5-car
 Alstom unit modelled on the parent sim's Desiro City shell with the same
 cab interior. Forked from the
 [Yorkshire Train Simulator](https://github.com/BrendanJamesLynskey/Airedale-Wharfedale-Sim)
@@ -35,9 +35,9 @@ which is the same route file format used by the parent sim's `LOAD FROM FILE…`
 loader and the
 [Yorkshire Line Editor](https://github.com/BrendanJamesLynskey/Yorkshire-Line-Editor).
 
-## Rolling Stock — Class 701/0
+## Rolling Stock — Class 701/5
 
-The only drivable unit. 5-car Alstom Class 701/0, 101.8 m, 262 t,
+The only drivable unit. 5-car Alstom Class 701/5, 101.8 m, 262 t,
 **central** driving position, IGBT inverter audio (350 Hz → 1400 Hz
 sweep), 1.0 m/s² acceleration, 1.2 m/s² service brake. The 3D model
 (cab and exterior body shell) is carried over from the parent sim's
