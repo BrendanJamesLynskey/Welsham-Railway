@@ -1,8 +1,9 @@
 # Welsham Railway
 
 A browser-based train driver simulator running the **Welsham Circle** — an
-8-station circular urban route — driving the **Class 700/0** Thameslink
-Desiro City. Forked from the
+8-station circular urban route — driving the **Class 701/0**, a 5-car
+Alstom unit modelled on the parent sim's Desiro City shell with the same
+cab interior. Forked from the
 [Yorkshire Train Simulator](https://github.com/BrendanJamesLynskey/Airedale-Wharfedale-Sim)
 with the bundled maps and rolling stock pruned down to just this single
 line and unit.
@@ -34,14 +35,17 @@ which is the same route file format used by the parent sim's `LOAD FROM FILE…`
 loader and the
 [Yorkshire Line Editor](https://github.com/BrendanJamesLynskey/Yorkshire-Line-Editor).
 
-## Rolling Stock — Class 700/0
+## Rolling Stock — Class 701/0
 
-The only drivable unit. 8-car Siemens Desiro City, 162.6 m, 388 t,
-**central** driving position (unusual for UK stock), MITRAC IGBT inverter
-audio (350 Hz → 1400 Hz sweep), 1.0 m/s² acceleration, 1.2 m/s² service
-brake. Bespoke cab interior: large central DMI, slim TMS and ETCS screens
-flanking it, CCTV monitor strip above the windscreen, master controller to
-the driver's right, AWS / DRA / EBP cluster further right, TPWS panel on
+The only drivable unit. 5-car Alstom Class 701/0, 101.8 m, 262 t,
+**central** driving position, IGBT inverter audio (350 Hz → 1400 Hz
+sweep), 1.0 m/s² acceleration, 1.2 m/s² service brake. The 3D model
+(cab and exterior body shell) is carried over from the parent sim's
+Class 700 Desiro City so the "Aventra" labelling here is brand-only;
+the silhouette and interior layout remain the Desiro City shape. Cab
+interior: large central DMI, slim TMS and ETCS screens flanking it,
+CCTV monitor strip above the windscreen, master controller to the
+driver's right, AWS / DRA / EBP cluster further right, TPWS panel on
 the left.
 
 ## Controls
