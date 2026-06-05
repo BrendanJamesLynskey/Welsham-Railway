@@ -639,10 +639,6 @@ const MAP_WELSHAM = {
       "lat": 54
     },
     {
-      "km": 2.97,
-      "lat": -1
-    },
-    {
       "km": 2.45,
       "lat": 108
     },
@@ -2547,16 +2543,8 @@ const MAP_WELSHAM = {
       "lat": -698
     },
     {
-      "km": 23.88,
-      "lat": 3
-    },
-    {
       "km": 0.24,
       "lat": 241
-    },
-    {
-      "km": 0,
-      "lat": -4
     },
     {
       "km": 23.3,
@@ -4477,10 +4465,6 @@ const MAP_WELSHAM = {
     {
       "km": 3.93,
       "lat": 195
-    },
-    {
-      "km": 3.93,
-      "lat": -8
     },
     {
       "km": 4.57,
@@ -8106,7 +8090,14 @@ function buildScatter(){
   // If a loaded map has no houses array (older JSON files written before
   // the Paint tool existed) we fall back to a single uniform sprinkle
   // so the world still has buildings.
-  const paintedHouses = (ROUTE.houses || []).filter(h => h && typeof h.km === 'number');
+  // Skip houses that would render on the rails. The editor doesn't enforce
+  // a clearance when painting, so a stroke that grazes the line can drop
+  // houses with |lat| ≈ 0. 8 m is roughly outside the running-line ballast
+  // shoulder on both UK tracks.
+  const TRACK_HOUSE_CLEARANCE = 8;
+  const paintedHouses = (ROUTE.houses || []).filter(h =>
+    h && typeof h.km === 'number' && Math.abs(h.lat || 0) >= TRACK_HOUSE_CLEARANCE
+  );
   if (paintedHouses.length > 0){
     const hGeo = new THREE.BoxGeometry(1, 1, 1);
     const hMat = new THREE.MeshStandardMaterial({ map: texBrick, roughness: 0.95 });
