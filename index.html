@@ -2251,7 +2251,10 @@ function buildScatter(){
     const side = rng() < 0.5 ? -1 : 1;
     const dist = 18 + rng()*220;
     const p = f.p.clone().add(f.r.clone().multiplyScalar(side * dist));
-    p.y += 5.5 + (rng()-0.5)*1.5;
+    // Lift onto any hill the trunk would otherwise sit inside — the
+    // tree's base now rests on the local dome surface so trees climb
+    // and crown the hills naturally.
+    p.y += hillHeightAt(p.x, p.z) + 5.5 + (rng()-0.5)*1.5;
     tmp.position.copy(p);
     tmp.scale.setScalar(0.7 + rng()*1.2);
     tmp.rotation.set(0, rng()*PI*2, 0);
@@ -2285,7 +2288,9 @@ function buildScatter(){
       const r2 = ((i * 51 + 7)  % 100) / 100;
       const r3 = ((i * 89 + 23) % 100) / 100;
       const w = 4 + r1 * 6, ht = 4 + r2 * 5, d = 4 + r3 * 6;
-      p.y += ht / 2 - 0.5;
+      // Houses sit on top of any hill the footprint lands inside, so a
+      // village painted up the side of a hill climbs with it.
+      p.y += hillHeightAt(p.x, p.z) + ht / 2 - 0.5;
       tmp.position.copy(p);
       tmp.scale.set(w, ht, d);
       tmp.rotation.set(0, ((i * 37) % 100) / 100 * PI * 2, 0);
@@ -2308,7 +2313,8 @@ function buildScatter(){
       const dist = 50 + rng() * 70;
       const p = f.p.clone().add(f.r.clone().multiplyScalar(side * dist));
       const w = 4 + rng()*8, h = 4 + rng()*6, d = 4 + rng()*8;
-      p.y += h/2 - 0.5;
+      // Fallback scatter follows hill terrain too.
+      p.y += hillHeightAt(p.x, p.z) + h/2 - 0.5;
       tmp.position.copy(p);
       tmp.scale.set(w, h, d);
       tmp.rotation.set(0, rng()*PI*2, 0);
@@ -2464,14 +2470,36 @@ function updateTraffic(dt){
 // hemisphere (top half of a SphereGeometry) at the projected world
 // position, X/Z-scaled to the radius and Y-scaled to the height so
 // the hill looks like a smooth dome rising above local grade.
+//
+// HILL_DATA caches each hill's world centre + radius + height so
+// scatter (trees / houses) and any other world content can look up
+// the dome's local surface height at a given (x, z) and rest on top
+// of it instead of clipping through. hillHeightAt() uses the same
+// hemisphere profile the dome mesh is drawn from — h(d) = height *
+// sqrt(1 − (d / radius)²) — so the lookup matches the visible
+// silhouette exactly. Hills don't stack; we take the max so two
+// overlapping hills behave like one bigger hill rather than adding
+// their heights together.
 // ============================================================
+let HILL_DATA = [];
+function hillHeightAt(x, z){
+  let maxH = 0;
+  for (let i = 0; i < HILL_DATA.length; i++){
+    const hl = HILL_DATA[i];
+    const dx = x - hl.cx, dz = z - hl.cz;
+    const d2 = dx * dx + dz * dz;
+    const r2 = hl.r2;
+    if (d2 >= r2) continue;
+    const local = hl.h * Math.sqrt(1 - d2 / r2);
+    if (local > maxH) maxH = local;
+  }
+  return maxH;
+}
 function buildHills(){
+  HILL_DATA = [];
   const group = new THREE.Group();
   const hills = (ROUTE.hills || []).filter(h => h && typeof h.km === 'number');
   if (!hills.length) return group;
-  // One shared unit-hemisphere geometry, scaled per hill via the mesh
-  // transform. Grass-tinted MeshStandardMaterial so the hill picks up
-  // hemisphere/sun lighting consistently with the terrain plane.
   const domeGeo = new THREE.SphereGeometry(1, 18, 9, 0, Math.PI * 2, 0, Math.PI / 2);
   const hillMat = new THREE.MeshStandardMaterial({
     color: 0x546e36, roughness: 0.95, metalness: 0,
@@ -2486,6 +2514,9 @@ function buildHills(){
     dome.position.copy(p);
     dome.scale.set(radius, height, radius);
     group.add(dome);
+    // Cache for hillHeightAt — pre-square the radius so the lookup
+    // can do a flat d² < r² test in the hot loop.
+    HILL_DATA.push({ cx: p.x, cz: p.z, r: radius, r2: radius * radius, h: height });
   }
   return group;
 }
