@@ -10,6 +10,10 @@ line and unit.
 
 [Play it here](https://brendanjameslynskey.github.io/Welsham-Railway/)
 
+[Announcement recorder](https://brendanjameslynskey.github.io/Welsham-Railway/recorder.html)
+— record station announcements and security messages into audio files
+for import into the sim.
+
 ## Route
 
 **Welsham Circle** — 22.9 km, 8 stations, urban biome.
