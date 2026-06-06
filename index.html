@@ -268,7 +268,8 @@ const MAP_WELSHAM = {
       "elev": 80,
       "lat": 55.955998,
       "lon": -0.389573,
-      "platforms": 2
+      "platforms": 2,
+      "style": "bridge"
     },
     {
       "km": 13.278,
@@ -13122,7 +13123,8 @@ const MAP_WELSHAM = {
       "height": 35
     }
   ],
-  "shapePoints": []
+  "shapePoints": [],
+  "riverWidth": 26
 };
 
 const MAPS = {
@@ -13672,7 +13674,10 @@ function buildRiver(){
   const group = new THREE.Group();
   const path = ROUTE.riverPath || [];
   if (path.length < 2) return group;
-  const halfW = 7;                        // 14 m wide channel
+  // Channel width is ROUTE.riverWidth metres (default 14). The editor
+  // exports this top-level so a route author can pick anything from a
+  // narrow drainage channel to a Thames-grade river.
+  const halfW = Math.max(2, Math.min(60, (ROUTE.riverWidth || 14) / 2));
   // The Yorkshire Line Editor exports river points as (km, lat) pairs
   // where lat is the perpendicular distance from the track in metres.
   // For straight routes the user's painted values are modest (Airedale's
@@ -14108,6 +14113,59 @@ function buildStations(){
     const platLen = s.plat;
     const halfKm  = (platLen / 2) / KM;
     const segs    = max(4, ceil(platLen / platformStep));
+    // Bridge-style station — London Blackfriars layout. The platforms span
+    // a river bridge instead of sitting on ballast; the sim draws the
+    // bridge deck + a row of stone piers underneath the running line, so
+    // when the river polyline crosses here the train appears to be on a
+    // viaduct over water. Built ONCE per bridge station, before the
+    // platform / shelter geometry the loop builds below.
+    if (String(s.style || '').toLowerCase() === 'bridge'){
+      const bridgeGroup = new THREE.Group();
+      const f0 = trackFrame(s.km);
+      bridgeGroup.position.copy(f0.p);
+      bridgeGroup.rotation.y = Math.atan2(-f0.t.x, -f0.t.z);
+      const bridgeLen = platLen + 60;             // extends past each platform end
+      const cx = TRACK_GAUGE_OFFSET / 2;          // centred between the two tracks
+      const deckW = TRACK_GAUGE_OFFSET + 11;      // ~15 m wide
+      const stone   = new THREE.MeshStandardMaterial({ color: 0xc8b08a, roughness: 0.95 });
+      const stoneD  = new THREE.MeshStandardMaterial({ color: 0xa68a64, roughness: 0.95 });
+      // Deck slab — sits just below rail level, extends well past the
+      // platforms so the bridge reads beyond the platform ends.
+      const deck = new THREE.Mesh(
+        new THREE.BoxGeometry(deckW, 0.5, bridgeLen), stone
+      );
+      deck.position.set(cx, -0.45, 0);
+      bridgeGroup.add(deck);
+      // Stone piers every 18 m, dropping ~6 m below grade so they sit in
+      // the riverbed even where the local terrain is a few metres below
+      // the trackbed. Stops a couple of metres short of each end so the
+      // outermost piers don't poke past the deck.
+      const pierSpacing = 18;
+      const nPiers = max(2, Math.floor((bridgeLen - 6) / pierSpacing));
+      for (let i = 0; i < nPiers; i++){
+        const t = (i + 0.5) / nPiers;
+        const pz = -bridgeLen / 2 + 3 + t * (bridgeLen - 6);
+        for (const dx of [-deckW/2 + 1.2, cx, deckW/2 - 1.2]){
+          const pier = new THREE.Mesh(
+            new THREE.BoxGeometry(1.8, 7, 1.6), stoneD
+          );
+          pier.position.set(dx, -4, pz);
+          bridgeGroup.add(pier);
+        }
+      }
+      // Tall parapets — the most visible Blackfriars cue from the cab.
+      const paraH = 1.6;
+      const paraT = 0.6;
+      const paraMat = new THREE.MeshStandardMaterial({ color: 0xa9947a, roughness: 0.85 });
+      for (const psign of [-1, +1]){
+        const para = new THREE.Mesh(
+          new THREE.BoxGeometry(paraT, paraH, bridgeLen), paraMat
+        );
+        para.position.set(cx + psign * (deckW / 2 - paraT / 2), -0.45 + 0.25 + paraH / 2, 0);
+        bridgeGroup.add(para);
+      }
+      group.add(bridgeGroup);
+    }
     // Station type — recognised values: 'halt' | 'station' | 'terminus' |
     // 'junction'. V1 differences: halts skip the canopy/posts. Terminus and
     // junction are stored on the station for the loader / editor but render
@@ -15397,6 +15455,73 @@ function buildLandmarks(){
         const pier = new THREE.Mesh(new THREE.BoxGeometry(deckW + 2, abutH, 2.0), stone);
         pier.position.set(cx, (deckBotY + abutBotY)/2, 0);
         g.add(pier);
+      }
+      group.add(g);
+    } else if (ft.type === 'stadium'){
+      // Football stadium — oval bowl with white stands, dark roof rim
+      // and a green pitch. Placed laterally beside the line (side L/R)
+      // at a healthy distance from the trackbed so the silhouette reads
+      // from the cab without the bowl walls clipping the running line.
+      const g = new THREE.Group();
+      const side = ft.side === 'R' ? +1 : -1;
+      const offset = 150;          // metres off the track to the chosen side
+      const sx = side * offset;
+      g.position.copy(f.p).add(f.r.clone().multiplyScalar(sx));
+      g.rotation.y = yaw;
+      // Dimensions — a credible stand of ~190 m × 130 m × 32 m high.
+      const rx = 95, rz = 65, bowlH = 32;
+      // Green pitch — a flat ellipse at ground level.
+      const pitchMat = new THREE.MeshStandardMaterial({ color: 0x3aa848, roughness: 0.92 });
+      const pitchGeo = new THREE.CylinderGeometry(rx * 0.55, rx * 0.55, 0.6, 32);
+      pitchGeo.scale(1, 1, rz * 0.65 / (rx * 0.55));
+      const pitch = new THREE.Mesh(pitchGeo, pitchMat);
+      pitch.position.y = 0.3;
+      g.add(pitch);
+      // White line at the halfway line + a centre circle dot
+      const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const halfwayLine = new THREE.Mesh(new THREE.BoxGeometry(rx * 1.1, 0.05, 0.4), lineMat);
+      halfwayLine.position.y = 0.65;
+      g.add(halfwayLine);
+      const centreCircle = new THREE.Mesh(
+        new THREE.RingGeometry(rx * 0.15, rx * 0.16, 32),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })
+      );
+      centreCircle.rotation.x = -Math.PI / 2;
+      centreCircle.position.y = 0.66;
+      g.add(centreCircle);
+      // Bowl wall — a CylinderGeometry with open ends, scaled non-
+      // uniformly to make an ellipse. White stands.
+      const standMat = new THREE.MeshStandardMaterial({ color: 0xe6e2d8, roughness: 0.85 });
+      const bowlGeo = new THREE.CylinderGeometry(rx, rx * 0.9, bowlH, 48, 1, true);
+      bowlGeo.scale(1, 1, rz / rx);
+      const bowl = new THREE.Mesh(bowlGeo, standMat);
+      bowl.position.y = bowlH / 2;
+      bowl.material.side = THREE.DoubleSide;
+      g.add(bowl);
+      // Dark roof rim around the top of the bowl
+      const roofMat = new THREE.MeshStandardMaterial({ color: 0x2a3038, roughness: 0.6, metalness: 0.3 });
+      const roofGeo = new THREE.TorusGeometry(rx * 0.97, 2.2, 12, 48);
+      roofGeo.scale(1, rz / rx, 1);
+      const roof = new THREE.Mesh(roofGeo, roofMat);
+      roof.rotation.x = Math.PI / 2;
+      roof.position.y = bowlH + 0.6;
+      g.add(roof);
+      // Floodlight pylons at the four corners of the bowl
+      const pylonMat = new THREE.MeshStandardMaterial({ color: 0x3a3a3c, roughness: 0.6 });
+      const pylonGeo = new THREE.CylinderGeometry(0.5, 0.7, bowlH + 22, 8);
+      for (const [px, pz] of [[ rx*0.75,  rz*0.95], [ rx*0.75, -rz*0.95],
+                              [-rx*0.75,  rz*0.95], [-rx*0.75, -rz*0.95]]){
+        const pylon = new THREE.Mesh(pylonGeo, pylonMat);
+        pylon.position.set(px, (bowlH + 22) / 2, pz);
+        g.add(pylon);
+        // Floodlight head at the top — emissive so it glows
+        const headMat = new THREE.MeshStandardMaterial({
+          color: 0xfff5d0, emissive: 0xfff0c0, emissiveIntensity: 0.6, roughness: 0.4,
+        });
+        const head = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1.4, 2.4), headMat);
+        head.position.set(px, bowlH + 22, pz);
+        head.lookAt(0, bowlH * 0.5, 0);
+        g.add(head);
       }
       group.add(g);
     }

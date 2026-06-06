@@ -54,7 +54,8 @@
       "elev": 80,
       "lat": 55.955998,
       "lon": -0.389573,
-      "platforms": 2
+      "platforms": 2,
+      "style": "bridge"
     },
     {
       "km": 13.278,
@@ -12908,5 +12909,6 @@
       "height": 35
     }
   ],
-  "shapePoints": []
+  "shapePoints": [],
+  "riverWidth": 26
 }
