@@ -365,6 +365,10 @@ const MAP_WELSHAM = {
       "len": 30
     },
     {
+      "km": 13.42,
+      "type": "stadium"
+    },
+    {
       "km": 16.84,
       "type": "viaduct",
       "len": 80
@@ -456,6 +460,10 @@ const MAP_WELSHAM = {
     {
       "km": 9.29,
       "lat": 3418
+    },
+    {
+      "km": 12.17,
+      "lat": 2317
     }
   ],
   "riverWidth": 50,
@@ -15568,47 +15576,47 @@ function buildStations(){
     if (!isHalt){
       const f0 = trackFrame(s.km);
       const yawMid = Math.atan2(-f0.t.x, -f0.t.z);
-      // Side of the track: L (negative lateral) or R (positive). Island
-      // stations (side === 'I') get the board on the L platform.
-      const boardSign = (s.side === 'R') ? +1 : -1;
-      // Stand the board 2 m back from the platform edge so it doesn't
-      // overhang the running line.
-      const boardLat = boardSign * (platformW / 2 - 0.4);
-      const poleHeight = 3.5;
+      // Sit the board ON the platform — 0.6 m back from the track-facing
+      // edge — instead of floating over the cess between platform and
+      // running line. trackCentre = 0 for an L platform, +TGO for an R
+      // platform; inner edge is 1.8 m further out from the gauge centre,
+      // matching platformAt() exactly.
+      const trackCentre = (s.side === 'R') ? TRACK_GAUGE_OFFSET : 0;
+      const boardSign   = (s.side === 'R') ? +1 : -1;
+      const innerLat    = trackCentre + boardSign * 1.8;
+      const boardLat    = innerLat + boardSign * 0.6;
+      // Compact sign — half-height pole and a 2.5 × 1.25 m face so the
+      // board reads as a station fitting rather than the previous
+      // overscale highway gantry.
+      const poleHeight = 2.5;
       const baseY = platformH;
       const poleMat = new THREE.MeshStandardMaterial({ color: 0x303338, roughness: 0.8 });
       const pole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.08, 0.08, poleHeight, 8),
+        new THREE.CylinderGeometry(0.06, 0.06, poleHeight, 8),
         poleMat
       );
       pole.position.copy(f0.p)
         .add(f0.r.clone().multiplyScalar(boardLat))
         .add(new THREE.Vector3(0, baseY + poleHeight / 2, 0));
       group.add(pole);
-      // Sign board hanging at the top of the pole, facing the track.
-      const boardW = 4.0, boardH = 2.0;
+      const boardW = 2.5, boardH = 1.25;
       const boardMesh = new THREE.Mesh(
         new THREE.PlaneGeometry(boardW, boardH),
         new THREE.MeshBasicMaterial({ map: departureBoardTex, side: THREE.DoubleSide })
       );
-      // Aim the board normal at the track centreline by adding π to yaw
-      // when the platform is on the right (board face would otherwise
-      // point away from the train).
       boardMesh.position.copy(f0.p)
         .add(f0.r.clone().multiplyScalar(boardLat))
-        .add(new THREE.Vector3(0, baseY + poleHeight + boardH / 2 - 0.3, 0));
+        .add(new THREE.Vector3(0, baseY + poleHeight + boardH / 2 - 0.15, 0));
       boardMesh.rotation.y = yawMid + (boardSign > 0 ? Math.PI : 0);
       group.add(boardMesh);
-      // Black sign housing (a thin box behind the canvas plane) so the
-      // back of the board reads as a real sign from the other side.
       const housingMat = new THREE.MeshStandardMaterial({ color: 0x141518, roughness: 0.6 });
       const housing = new THREE.Mesh(
-        new THREE.BoxGeometry(boardW + 0.2, boardH + 0.2, 0.12),
+        new THREE.BoxGeometry(boardW + 0.15, boardH + 0.15, 0.08),
         housingMat
       );
       housing.position.copy(boardMesh.position);
-      housing.position.x -= Math.sin(boardMesh.rotation.y) * 0.07;
-      housing.position.z -= Math.cos(boardMesh.rotation.y) * 0.07;
+      housing.position.x -= Math.sin(boardMesh.rotation.y) * 0.045;
+      housing.position.z -= Math.cos(boardMesh.rotation.y) * 0.045;
       housing.rotation.y = boardMesh.rotation.y;
       group.add(housing);
     }
